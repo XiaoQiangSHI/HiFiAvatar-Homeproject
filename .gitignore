@@ -1,0 +1,40 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local worktrees
+.worktrees/
+worktrees/
+
+# Dependency / build artifacts
+node_modules/
+dist/
+build/
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs / temp files
+*.log
+*.tmp
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
