@@ -122,6 +122,15 @@ class ProjectPageStructureTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, INDEX_HTML)
 
+    def test_hero_includes_code_link(self):
+        self.assertIn('class="hero-links"', INDEX_HTML)
+        self.assertIn(">Code<", INDEX_HTML)
+        self.assertIn(
+            'href="https://github.com/XiaoQiangSHI/HiFiAvatar-"',
+            INDEX_HTML,
+        )
+        self.assertIn('aria-label="Open code repository"', INDEX_HTML)
+
     def test_copy_avoids_casual_repository_wording(self):
         page_source = "\n".join([INDEX_HTML, INDEX_JS])
         banned_phrases = [

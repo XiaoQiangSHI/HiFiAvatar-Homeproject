@@ -259,6 +259,12 @@ main {
   gap: 0.55rem;
 }
 
+.hero-links {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .hero-author-list,
 .hero-affiliation-line {
   margin: 0;
@@ -1026,6 +1032,10 @@ video:fullscreen {
     align-items: start;
   }
 
+  .hero-links {
+    justify-content: flex-start;
+  }
+
   .action-group {
     justify-content: flex-start;
   }
@@ -1114,6 +1124,14 @@ video:fullscreen {
   .action-group {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .hero-links {
+    width: 100%;
+  }
+
+  .hero-links .button {
+    flex: 1 1 180px;
   }
 
   .action-group .button {
