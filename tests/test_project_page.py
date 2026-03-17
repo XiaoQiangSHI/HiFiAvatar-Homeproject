@@ -199,6 +199,17 @@ class ProjectPageStructureTests(unittest.TestCase):
                 )
         self.assertIn('id="results-gallery"', INDEX_HTML)
 
+    def test_bibtex_block_is_present_but_empty(self):
+        self.assertIn('id="bibtex-code"', INDEX_HTML)
+        self.assertNotIn("@article{hifiavatar2026", INDEX_HTML)
+        bibtex_code = re.search(
+            r'<pre id="bibtex-code"><code>(?P<body>.*?)</code></pre>',
+            INDEX_HTML,
+            flags=re.DOTALL,
+        )
+        self.assertIsNotNone(bibtex_code)
+        self.assertEqual("", bibtex_code.group("body").strip())
+
     def test_gallery_script_tracks_active_group_and_descriptions(self):
         self.assertIn("let activeGroupKey", INDEX_JS)
         self.assertIn("description:", INDEX_JS)
