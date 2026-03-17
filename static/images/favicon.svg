@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="HiFiAvatar favicon">
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="#f8f2e7"/>
+  <rect x="4.5" y="4.5" width="55" height="55" rx="15.5" fill="none" stroke="#15233f" stroke-opacity="0.18"/>
+  <rect x="18" y="15" width="8" height="34" rx="4" fill="#15233f"/>
+  <rect x="38" y="15" width="8" height="34" rx="4" fill="#15233f"/>
+  <rect x="24" y="27.5" width="16" height="8" rx="4" fill="#15233f"/>
+  <circle cx="49" cy="49" r="5" fill="#c86b3c"/>
+</svg>

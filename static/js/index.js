@@ -1,142 +1,247 @@
-window.HELP_IMPROVE_VIDEOJS = false;
+const resultGroups = {
+  self: {
+    overline: "Expression-driven animation",
+    title: "Self-Reenactment",
+    description:
+      "Subject-specific self-reenactment sequences illustrating how facial appearance details are preserved under expression-driven animation.",
+    featured: {
+      src: "videos/self_reeactment/1.mp4",
+      title: "Representative self-reenactment sequence",
+      subtitle: "Qualitative sequence"
+    },
+    items: Array.from({ length: 9 }, (_, index) => ({
+      src: `videos/self_reeactment/${index + 1}.mp4`,
+      title: `Self Reenactment ${index + 1}`,
+      subtitle: "Qualitative sequence"
+    }))
+  },
+  cross: {
+    overline: "Cross-subject driving",
+    title: "Cross-Reenactment",
+    description:
+      "Cross-reenactment sequences demonstrating target-avatar rendering under driving motions transferred from external sources.",
+    featured: {
+      src: "videos/cross_reacttment/1.mp4",
+      title: "Representative cross-reenactment sequence",
+      subtitle: "Qualitative sequence"
+    },
+    items: Array.from({ length: 4 }, (_, index) => ({
+      src: `videos/cross_reacttment/${index + 1}.mp4`,
+      title: `Cross Reenactment ${index + 1}`,
+      subtitle: "Qualitative sequence"
+    }))
+  },
+  multiview: {
+    overline: "View consistency",
+    title: "Multi-View Consistency",
+    description:
+      "Multi-view sequences illustrating viewpoint consistency and appearance stability across rendered camera changes.",
+    featured: {
+      src: "videos/multiview/1.mp4",
+      title: "Representative multi-view sequence",
+      subtitle: "Qualitative sequence"
+    },
+    items: Array.from({ length: 9 }, (_, index) => ({
+      src: `videos/multiview/${index + 1}.mp4`,
+      title: `Multi-View ${index + 1}`,
+      subtitle: "Qualitative sequence"
+    }))
+  }
+};
 
-// More Works Dropdown Functionality
-function toggleMoreWorks() {
-    const dropdown = document.getElementById('moreWorksDropdown');
-    const button = document.querySelector('.more-works-btn');
-    
-    if (dropdown.classList.contains('show')) {
-        dropdown.classList.remove('show');
-        button.classList.remove('active');
-    } else {
-        dropdown.classList.add('show');
-        button.classList.add('active');
-    }
+let activeGroupKey = "self";
+
+function createVideoCard(item) {
+  return `
+    <article class="video-card">
+      <video controls muted playsinline preload="metadata">
+        <source src="${item.src}" type="video/mp4">
+      </video>
+      <div class="video-meta">
+        <strong>${item.title}</strong>
+        <span>${item.subtitle}</span>
+      </div>
+    </article>
+  `;
 }
 
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const container = document.querySelector('.more-works-container');
-    const dropdown = document.getElementById('moreWorksDropdown');
-    const button = document.querySelector('.more-works-btn');
-    
-    if (container && !container.contains(event.target)) {
-        dropdown.classList.remove('show');
-        button.classList.remove('active');
-    }
-});
+function renderFeaturedCard(group) {
+  const container = document.getElementById("results-featured");
 
-// Close dropdown on escape key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        const dropdown = document.getElementById('moreWorksDropdown');
-        const button = document.querySelector('.more-works-btn');
-        dropdown.classList.remove('show');
-        button.classList.remove('active');
-    }
-});
+  if (!container) {
+    return;
+  }
 
-// Copy BibTeX to clipboard
+  container.innerHTML = `
+    <video class="featured-video" controls muted playsinline preload="metadata">
+      <source src="${group.featured.src}" type="video/mp4">
+    </video>
+    <h3>${group.featured.title}</h3>
+    <p>${group.featured.subtitle}</p>
+  `;
+}
+
+function renderGallery(group) {
+  const gallery = document.getElementById("results-gallery");
+
+  if (!gallery) {
+    return;
+  }
+
+  gallery.innerHTML = group.items.map(createVideoCard).join("");
+}
+
+function renderGroupCopy(group) {
+  const overline = document.getElementById("results-group-overline");
+  const title = document.getElementById("results-group-title");
+  const description = document.getElementById("results-group-description");
+
+  if (overline) {
+    overline.textContent = group.overline;
+  }
+
+  if (title) {
+    title.textContent = group.title;
+  }
+
+  if (description) {
+    description.textContent = group.description;
+  }
+}
+
+function syncFilterState() {
+  const buttons = document.querySelectorAll(".results-filter-button");
+
+  buttons.forEach((button) => {
+    const isActive = button.dataset.group === activeGroupKey;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+  });
+}
+
+function renderCounts() {
+  const totalClips = Object.values(resultGroups).reduce(
+    (sum, group) => sum + group.items.length,
+    0
+  );
+  const totalElement = document.getElementById("total-clips");
+
+  if (totalElement) {
+    totalElement.textContent = String(totalClips);
+  }
+
+  Object.entries(resultGroups).forEach(([groupKey, group]) => {
+    const countElement = document.getElementById(`filter-count-${groupKey}`);
+
+    if (countElement) {
+      countElement.textContent = `${group.items.length} clips`;
+    }
+  });
+}
+
+function renderActiveResultsGroup() {
+  const group = resultGroups[activeGroupKey];
+
+  if (!group) {
+    return;
+  }
+
+  renderFeaturedCard(group);
+  renderGroupCopy(group);
+  renderGallery(group);
+  syncFilterState();
+}
+
+function bindResultFilters() {
+  document.querySelectorAll(".results-filter-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const { group } = button.dataset;
+
+      if (!group || group === activeGroupKey || !(group in resultGroups)) {
+        return;
+      }
+
+      activeGroupKey = group;
+      renderActiveResultsGroup();
+    });
+  });
+}
+
+function setCopyButtonState(button, label) {
+  const copyText = button.querySelector(".copy-text");
+  button.classList.add("copied");
+
+  if (copyText) {
+    copyText.textContent = label;
+  }
+
+  setTimeout(() => {
+    button.classList.remove("copied");
+
+    if (copyText) {
+      copyText.textContent = "Copy";
+    }
+  }, 1800);
+}
+
+function fallbackCopy(payload, button) {
+  const textArea = document.createElement("textarea");
+  textArea.value = payload;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "absolute";
+  textArea.style.left = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textArea);
+  setCopyButtonState(button, "Copied");
+}
+
 function copyBibTeX() {
-    const bibtexElement = document.getElementById('bibtex-code');
-    const button = document.querySelector('.copy-bibtex-btn');
-    const copyText = button.querySelector('.copy-text');
-    
-    if (bibtexElement) {
-        navigator.clipboard.writeText(bibtexElement.textContent).then(function() {
-            // Success feedback
-            button.classList.add('copied');
-            copyText.textContent = 'Cop';
-            
-            setTimeout(function() {
-                button.classList.remove('copied');
-                copyText.textContent = 'Copy';
-            }, 2000);
-        }).catch(function(err) {
-            console.error('Failed to copy: ', err);
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = bibtexElement.textContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
-            button.classList.add('copied');
-            copyText.textContent = 'Cop';
-            setTimeout(function() {
-                button.classList.remove('copied');
-                copyText.textContent = 'Copy';
-            }, 2000);
-        });
-    }
+  const bibtexElement = document.getElementById("bibtex-code");
+  const button = document.querySelector(".copy-bibtex-btn");
+
+  if (!bibtexElement || !button) {
+    return;
+  }
+
+  const payload = bibtexElement.textContent;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard
+      .writeText(payload)
+      .then(() => {
+        setCopyButtonState(button, "Copied");
+      })
+      .catch(() => {
+        fallbackCopy(payload, button);
+      });
+    return;
+  }
+
+  fallbackCopy(payload, button);
 }
 
-// Scroll to top functionality
 function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// Show/hide scroll to top button
-window.addEventListener('scroll', function() {
-    const scrollButton = document.querySelector('.scroll-to-top');
-    if (window.pageYOffset > 300) {
-        scrollButton.classList.add('visible');
-    } else {
-        scrollButton.classList.remove('visible');
-    }
+window.addEventListener("scroll", () => {
+  const button = document.querySelector(".scroll-to-top");
+
+  if (!button) {
+    return;
+  }
+
+  if (window.scrollY > 360) {
+    button.classList.add("visible");
+  } else {
+    button.classList.remove("visible");
+  }
 });
 
-// Video carousel autoplay when in view
-function setupVideoCarouselAutoplay() {
-    const carouselVideos = document.querySelectorAll('.results-carousel video');
-    
-    if (carouselVideos.length === 0) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const video = entry.target;
-            if (entry.isIntersecting) {
-                // Video is in view, play it
-                video.play().catch(e => {
-                    // Autoplay failed, probably due to browser policy
-                    console.log('Autoplay prevented:', e);
-                });
-            } else {
-                // Video is out of view, pause it
-                video.pause();
-            }
-        });
-    }, {
-        threshold: 0.5 // Trigger when 50% of the video is visible
-    });
-    
-    carouselVideos.forEach(video => {
-        observer.observe(video);
-    });
-}
-
-$(document).ready(function() {
-    // Check for click events on the navbar burger icon
-
-    var options = {
-		slidesToScroll: 1,
-		slidesToShow: 1,
-		loop: true,
-		infinite: true,
-		autoplay: true,
-		autoplaySpeed: 5000,
-    }
-
-	// Initialize all div with carousel class
-    var carousels = bulmaCarousel.attach('.carousel', options);
-	
-    bulmaSlider.attach();
-    
-    // Setup video autoplay for carousel
-    setupVideoCarouselAutoplay();
-
-})
+document.addEventListener("DOMContentLoaded", () => {
+  renderCounts();
+  bindResultFilters();
+  renderActiveResultsGroup();
+});
