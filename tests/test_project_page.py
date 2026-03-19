@@ -122,25 +122,25 @@ class ProjectPageStructureTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, INDEX_HTML)
 
-    def test_hero_includes_code_link(self):
-        self.assertIn('class="hero-links"', INDEX_HTML)
-        self.assertIn(">Code<", INDEX_HTML)
-        self.assertIn(
-            'href="https://github.com/XiaoQiangSHI/HiFiAvatar-"',
-            INDEX_HTML,
-        )
-        self.assertIn('aria-label="Open code repository"', INDEX_HTML)
-
-    def test_hero_shows_author_names_only(self):
-        self.assertIn(
-            "Xiaoqiang Shi · Zhenyu Yin · Guangjie Han · Feiqing Zhang · Chen Wang",
-            INDEX_HTML,
-        )
+    def test_hero_is_anonymized_for_review(self):
+        self.assertIn("Anonymous Authors", INDEX_HTML)
         for phrase in [
-            "Author Placeholder",
-            "Affiliation Placeholder",
-            "Author names and affiliations remain anonymized in this review version.",
-            'class="hero-affiliation-line"',
+            'class="hero-links"',
+            ">Code<",
+            'aria-label="Open code repository"',
+            "github.com",
+        ]:
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase, INDEX_HTML)
+
+    def test_head_metadata_is_anonymized(self):
+        for phrase in [
+            'meta name="author"',
+            'property="article:author"',
+            'name="citation_author"',
+            '"mainEntity"',
+            '"url"',
+            "github.com",
         ]:
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, INDEX_HTML)
